@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "[INFO] Memulai instalasi Auto_airplane BY SABDO PALON STORE..."
+echo "[INFO] Memulai proses instalasi Auto_airplane BY SABDO PALON STORE..."
 
 # Cek dan instal dependensi
 echo "[STEP] Memeriksa dan memasang dependensi..."
@@ -10,36 +10,44 @@ opkg install curl adb bind-tools
 # Unduh skrip utama dari GitHub
 SCRIPT_URL="https://raw.githubusercontent.com/Smarasanta/Auto_airplane/main/auto_airplane.sh"
 INSTALL_PATH="/root/auto_airplane.sh"
+CONFIG_PATH="/root/auto_airplane.env"
 LOG_PATH="/root/auto_airplane.log"
 
 echo "[STEP] Mengunduh skrip dari GitHub..."
 curl -fsSL "$SCRIPT_URL" -o "$INSTALL_PATH"
-
 chmod +x "$INSTALL_PATH"
 
-# Input manual
-read -r -p "[INPUT] Masukkan Telegram Bot Token: " TELEGRAM_TOKEN
-read -r -p "[INPUT] Masukkan Telegram Chat ID: " TELEGRAM_CHAT_ID
-read -r -p "[INPUT] Masukkan Target Host (contoh: google.com): " TARGET_HOST
+# Input manual konfigurasi
+echo "[INPUT] Masukkan Telegram Bot Token:"
+read TELEGRAM_TOKEN
+echo "[INPUT] Masukkan Telegram Chat ID:"
+read TELEGRAM_CHAT_ID
+echo "[INPUT] Masukkan Target Host (misal: google.com):"
+read TARGET_HOST
 
-# Simpan konfigurasi ke dalam skrip
-sed -i "s|^TELEGRAM_TOKEN=.*|TELEGRAM_TOKEN=\"$TELEGRAM_TOKEN\"|" "$INSTALL_PATH"
-sed -i "s|^TELEGRAM_CHAT_ID=.*|TELEGRAM_CHAT_ID=\"$TELEGRAM_CHAT_ID\"|" "$INSTALL_PATH"
-sed -i "s|^TARGET_HOST=.*|TARGET_HOST=\"$TARGET_HOST\"|" "$INSTALL_PATH"
+# Simpan ke file konfigurasi
+cat <<EOF > "$CONFIG_PATH"
+TELEGRAM_TOKEN='$TELEGRAM_TOKEN'
+TELEGRAM_CHAT_ID='$TELEGRAM_CHAT_ID'
+TARGET_HOST='$TARGET_HOST'
+EOF
 
-# Tambahkan ke /etc/rc.local jika belum ada
+# Tambahkan ke rc.local jika belum ada
 RCLOCAL="/etc/rc.local"
 if ! grep -q "$INSTALL_PATH" "$RCLOCAL"; then
-    sed -i "/^exit 0/i $INSTALL_PATH >> $LOG_PATH 2>&1 &" "$RCLOCAL"
+    echo "[STEP] Menambahkan skrip ke /etc/rc.local..."
+    sed -i "/^exit 0/i $INSTALL_PATH &" "$RCLOCAL"
 fi
 
-chmod +x "$RCLOCAL"
+# Setup log cleaner setiap 30 menit via cron
+echo "[STEP] Menjadwalkan pembersihan log setiap 30 menit..."
+crontab -l 2>/dev/null | grep -v 'auto_airplane.log' > /tmp/cron.tmp
+echo "*/30 * * * * echo '' > $LOG_PATH" >> /tmp/cron.tmp
+crontab /tmp/cron.tmp
+rm /tmp/cron.tmp
 
-# Tambahkan cron untuk bersihkan log tiap 30 menit
-( crontab -l 2>/dev/null | grep -v "truncate" ; echo "*/30 * * * * truncate -s 0 $LOG_PATH" ) | crontab -
-
-# Jalankan skrip sekarang
+# Jalankan skrip langsung
 echo "[INFO] Menjalankan auto_airplane.sh..."
-"$INSTALL_PATH" >> "$LOG_PATH" 2>&1 &
+"$INSTALL_PATH" &
 
-echo "[DONE] Instalasi selesai. Log di $LOG_PATH"
+echo "[DONE] Instalasi selesai dan skrip sedang berjalan."
