@@ -29,9 +29,10 @@ echo "[INFO] Masukkan alamat Target Host yang ingin diping (contoh: google.com a
 read TARGET_HOST
 
 # Menyimpan konfigurasi Telegram dan Target Host di auto_airplane.sh
-sed -i "s|TELEGRAM_TOKEN=\"\"|TELEGRAM_TOKEN=\"$TELEGRAM_TOKEN\"|" "$INSTALL_PATH"
-sed -i "s|TELEGRAM_CHAT_ID=\"\"|TELEGRAM_CHAT_ID=\"$TELEGRAM_CHAT_ID\"|" "$INSTALL_PATH"
-sed -i "s|TARGET_HOST=\"\"|TARGET_HOST=\"$TARGET_HOST\"|" "$INSTALL_PATH"
+echo "[STEP] Menyimpan konfigurasi ke skrip auto_airplane.sh..."
+sed -i "s|^TELEGRAM_TOKEN=.*|TELEGRAM_TOKEN=\"$TELEGRAM_TOKEN\"|" "$INSTALL_PATH"
+sed -i "s|^TELEGRAM_CHAT_ID=.*|TELEGRAM_CHAT_ID=\"$TELEGRAM_CHAT_ID\"|" "$INSTALL_PATH"
+sed -i "s|^TARGET_HOST=.*|TARGET_HOST=\"$TARGET_HOST\"|" "$INSTALL_PATH"
 
 # Tambahkan ke rc.local agar skrip berjalan otomatis saat boot
 RCLOCAL="/etc/rc.local"
