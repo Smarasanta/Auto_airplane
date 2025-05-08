@@ -1,6 +1,16 @@
-# Auto Airplane Mode Script for Android via ADB (OpenWrt)
+# Auto_airplane
 
-Skrip ini secara otomatis memantau koneksi internet dari router OpenWrt. Jika tidak ada koneksi, maka akan mengaktifkan **mode pesawat** di perangkat Android (yang terhubung via ADB) selama 10 detik dan kemudian mematikannya, dengan tujuan menyegarkan koneksi jaringan.
+[![License: Custom](https://img.shields.io/badge/license-restricted-red)](./LICENSE)
+
+## 🚫 License
+This software is licensed under a **Custom Restricted License**.
+
+- ✅ Free to use for personal/internal purposes  
+- ❌ No redistribution  
+- ❌ No modification or reverse engineering  
+- ❌ No commercial use without permission
+
+For commercial licensing or inquiries, contact: `smarasanta@example.com`
 
 ## 🔧 Fitur
 - Ping otomatis ke host target dari router
