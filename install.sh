@@ -32,12 +32,27 @@ TELEGRAM_CHAT_ID='$TELEGRAM_CHAT_ID'
 TARGET_HOST='$TARGET_HOST'
 EOF
 
-# Tambahkan ke rc.local jika belum ada
-RCLOCAL="/etc/rc.local"
-if ! grep -q "$INSTALL_PATH" "$RCLOCAL"; then
-    echo "[STEP] Menambahkan skrip ke /etc/rc.local..."
-    sed -i "/^exit 0/i $INSTALL_PATH &" "$RCLOCAL"
-fi
+# Buat skrip init.d agar auto_airplane jadi service
+SERVICE_PATH="/etc/init.d/auto_airplane"
+cat <<EOF > "$SERVICE_PATH"
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=15
+
+start() {
+    echo "Menjalankan auto_airplane..."
+    /bin/sh $INSTALL_PATH &
+}
+
+stop() {
+    echo "Menghentikan auto_airplane..."
+    pkill -f $INSTALL_PATH
+}
+EOF
+
+chmod +x "$SERVICE_PATH"
+/etc/init.d/auto_airplane enable
 
 # Setup log cleaner setiap 30 menit via cron
 echo "[STEP] Menjadwalkan pembersihan log setiap 30 menit..."
@@ -46,8 +61,8 @@ echo "*/30 * * * * echo '' > $LOG_PATH" >> /tmp/cron.tmp
 crontab /tmp/cron.tmp
 rm /tmp/cron.tmp
 
-# Jalankan skrip langsung
-echo "[INFO] Menjalankan auto_airplane.sh..."
-"$INSTALL_PATH" &
+# Jalankan service langsung
+echo "[INFO] Menjalankan service auto_airplane..."
+/etc/init.d/auto_airplane start
 
-echo "[DONE] Instalasi selesai dan skrip sedang berjalan."
+echo "[DONE] Instalasi selesai dan skrip sedang berjalan sebagai service."
