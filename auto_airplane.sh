@@ -42,11 +42,11 @@ rotate_log() {
 }
 
 check_if_home() {
-    current_focus=$(adb shell dumpsys window windows | grep -E 'mCurrentFocus' || true)
-    if echo "$current_focus" | grep -iq "launcher"; then
-        return 0  # already at home
+    display_status=$(adb shell dumpsys power | grep "mHoldingDisplaySuspendBlocker" || true)
+    if echo "$display_status" | grep -iq "true"; then
+        return 0  # layar hidup, dianggap sudah di home
     else
-        return 1  # not at home
+        return 1  # layar mati, dianggap bukan di home
     fi
 }
 
