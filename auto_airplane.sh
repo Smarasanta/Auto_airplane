@@ -95,7 +95,7 @@ while true; do
                 log "[ERROR] Failed to enable airplane mode!"
             fi
 
-            sleep 10
+            sleep 5
 
             log "[TRY $retry] Disabling airplane mode..."
             if ! adb shell su -c 'settings put global airplane_mode_on 0' || \
@@ -103,10 +103,10 @@ while true; do
                 log "[ERROR] Failed to disable airplane mode!"
             fi
 
-            sleep 5
+            sleep 15
 
-            if ping -c 1 -W 5 "$TARGET_HOST" >/dev/null 2>&1 && \
-               curl -X "HEAD" --connect-timeout 5 -so /dev/null "$TARGET_URL"; then
+            if ping -c 1 -W 10 "$TARGET_HOST" >/dev/null 2>&1 && \
+               curl -X "HEAD" --connect-timeout 10 -so /dev/null "$TARGET_URL"; then
                 log "[SUCCESS] Connection restored after try $retry"
                 if [ -n "$TELEGRAM_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
                     curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage" \
