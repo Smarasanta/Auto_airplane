@@ -12,18 +12,19 @@ echo "[INIT] Monitoring koneksi ke $TARGET_HOST..." | tee -a "$LOG_FILE"
 
 while true; do
     for i in 1 2 3; do
-        if ping -c 1 -W 1 "$TARGET_HOST" > /dev/null 2>&1; then
-            echo "[INFO] Ping berhasil ke $TARGET_HOST" | tee -a "$LOG_FILE"
-            fail_count=0
-        else
-            echo "[WARN] Ping gagal ke $TARGET_HOST" | tee -a "$LOG_FILE"
+        if ! ping -c 1 -W 1 "$TARGET_HOST" > /dev/null 2>&1 || \
+           ! curl -X "HEAD" --connect-timeout 3 -so /dev/null "http://bing.com"; then
+            echo "[WARN] Salah satu pemeriksaan koneksi gagal (ping atau curl)" | tee -a "$LOG_FILE"
             fail_count=$((fail_count + 1))
+        else
+            echo "[INFO] Pemeriksaan koneksi berhasil" | tee -a "$LOG_FILE"
+            fail_count=0
         fi
         sleep "$INTERVAL"
     done
 
     if [ "$fail_count" -ge "$MAX_FAILURES" ]; then
-        echo "[ALERT] Tidak ada jaringan. Menjalankan siklus mode pesawat..." | tee -a "$LOG_FILE"
+        echo "[ALERT] Koneksi dianggap putus. Menjalankan siklus mode pesawat..." | tee -a "$LOG_FILE"
 
         retry=1
         while [ "$retry" -le "$MAX_RETRIES" ]; do
@@ -38,7 +39,8 @@ while true; do
             sleep 5
 
             echo "[CHECK] Mengecek koneksi..." | tee -a "$LOG_FILE"
-            if ping -c 1 -W 2 "$TARGET_HOST" > /dev/null 2>&1; then
+            if ping -c 1 -W 2 "$TARGET_HOST" > /dev/null 2>&1 || \
+               curl -X "HEAD" --connect-timeout 3 -so /dev/null "http://bing.com"; then
                 echo "[RECOVERY] Koneksi pulih setelah percobaan ke-$retry." | tee -a "$LOG_FILE"
                 curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage" \
                     -d chat_id="$TELEGRAM_CHAT_ID" \
