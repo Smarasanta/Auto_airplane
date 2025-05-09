@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "[INFO] Memulai proses instalasi Auto_airplane BY SABDO PALON STORE..."
+echo "[INFO] Memulai proses instalasi Auto_airplane..."
 
 # Cek root
 if [ "$(id -u)" -ne 0 ]; then
@@ -19,7 +19,7 @@ opkg install curl adb bind-tools || {
     exit 1
 }
 
-# Path yang lebih sesuai
+# Path instalasi
 INSTALL_DIR="/etc/auto_airplane"
 mkdir -p "$INSTALL_DIR"
 SCRIPT_PATH="$INSTALL_DIR/auto_airplane.sh"
@@ -27,7 +27,7 @@ CONFIG_PATH="$INSTALL_DIR/auto_airplane.env"
 LOG_PATH="/var/log/auto_airplane.log"
 
 # Unduh skrip utama
-echo "[STEP] Mengunduh skrip dari GitHub..."
+echo "[STEP] Mengunduh skript dari GitHub..."
 SCRIPT_URL="https://raw.githubusercontent.com/Smarasanta/Auto_airplane/main/auto_airplane.sh"
 if ! curl -fsSL "$SCRIPT_URL" -o "$SCRIPT_PATH"; then
     echo "[ERROR] Gagal mengunduh skrip utama"
@@ -35,24 +35,32 @@ if ! curl -fsSL "$SCRIPT_URL" -o "$SCRIPT_PATH"; then
 fi
 chmod +x "$SCRIPT_PATH"
 
-# Input konfigurasi
+# Input konfigurasi dengan validasi
 echo "[INPUT] Masukkan Telegram Bot Token:"
-read TELEGRAM_TOKEN
+while read TELEGRAM_TOKEN && [ -z "$TELEGRAM_TOKEN" ]; do
+    echo "[ERROR] Token tidak boleh kosong, coba lagi:"
+done
+
 echo "[INPUT] Masukkan Telegram Chat ID:"
-read TELEGRAM_CHAT_ID
+while read TELEGRAM_CHAT_ID && [ -z "$TELEGRAM_CHAT_ID" ]; do
+    echo "[ERROR] Chat ID tidak boleh kosong, coba lagi:"
+done
+
 echo "[INPUT] Masukkan Target Host (misal: google.com):"
-read TARGET_HOST
+while read TARGET_HOST && [ -z "$TARGET_HOST" ]; do
+    echo "[ERROR] Target host tidak boleh kosong, coba lagi:"
+done
 
-# Simpan konfigurasi
-cat <<EOF > "$CONFIG_PATH"
-TELEGRAM_TOKEN='$TELEGRAM_TOKEN'
-TELEGRAM_CHAT_ID='$TELEGRAM_CHAT_ID'
-TARGET_HOST='$TARGET_HOST'
-EOF
+# Simpan konfigurasi dengan format yang benar
+{
+    echo "TELEGRAM_TOKEN='$TELEGRAM_TOKEN'"
+    echo "TELEGRAM_CHAT_ID='$TELEGRAM_CHAT_ID'"
+    echo "TARGET_HOST='$TARGET_HOST'"
+} > "$CONFIG_PATH"
 
-# Buat service init.d yang lebih baik
+# Buat service init.d
 SERVICE_PATH="/etc/init.d/auto_airplane"
-cat <<EOF > "$SERVICE_PATH"
+cat > "$SERVICE_PATH" <<'EOF'
 #!/bin/sh /etc/rc.common
 
 USE_PROCD=1
@@ -61,7 +69,7 @@ STOP=15
 
 start_service() {
     procd_open_instance
-    procd_set_param command /bin/sh "$SCRIPT_PATH"
+    procd_set_param command /bin/sh "/etc/auto_airplane/auto_airplane.sh"
     procd_set_param respawn
     procd_set_param stdout 1
     procd_set_param stderr 1
@@ -69,8 +77,8 @@ start_service() {
 }
 
 stop_service() {
-    pid=\$(pgrep -f "$SCRIPT_PATH")
-    [ -n "\$pid" ] && kill \$pid
+    pid=$(pgrep -f "/etc/auto_airplane/auto_airplane.sh")
+    [ -n "$pid" ] && kill $pid
 }
 EOF
 
@@ -94,6 +102,6 @@ echo "[INFO] Menjalankan service auto_airplane..."
     exit 1
 }
 
-echo "[DONE] Instalasi selesai. Service auto_airplane aktif dan berjalan."
-echo "       Log disimpan di: $LOG_PATH"
-echo "       Konfigurasi ada di: $CONFIG_PATH"
+echo "[DONE] Instalasi selesai."
+echo "       Config: $CONFIG_PATH"
+echo "       Log: $LOG_PATH"
