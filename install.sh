@@ -18,11 +18,11 @@ curl -fsSL "$SCRIPT_URL" -o "$INSTALL_PATH"
 chmod +x "$INSTALL_PATH"
 
 # Input manual konfigurasi
-printf "[INPUT] Masukkan Telegram Bot Token: "
+echo "[INPUT] Masukkan Telegram Bot Token:"
 read TELEGRAM_TOKEN
-printf "[INPUT] Masukkan Telegram Chat ID: "
+echo "[INPUT] Masukkan Telegram Chat ID:"
 read TELEGRAM_CHAT_ID
-printf "[INPUT] Masukkan Target Host (misal: google.com): "
+echo "[INPUT] Masukkan Target Host (misal: google.com):"
 read TARGET_HOST
 
 # Simpan ke file konfigurasi
