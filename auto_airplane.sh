@@ -23,8 +23,8 @@ echo "[INIT] Monitoring connection to $TARGET_HOST..." | tee -a "$LOG_FILE"
 
 while true; do
     # Check connection (ping + HTTP)
-    if ping -c 1 -W 1 "$TARGET_HOST" > /dev/null 2>&1 && \
-       curl -X "HEAD" --connect-timeout 3 -so /dev/null "$TARGET_URL"; then
+    if ping -c 1 -W 1 "$TARGET_HOST"  && \
+       curl -X "HEAD" --connect-timeout 3 -so "$TARGET_URL"; then
         echo "[OK] Connection check passed" | tee -a "$LOG_FILE"
         fail_count=0
     else
