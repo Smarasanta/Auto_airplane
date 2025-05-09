@@ -36,30 +36,19 @@ fi
 chmod +x "$SCRIPT_PATH"
 
 # Input konfigurasi dengan validasi
-while true; do
-    read -p "[INPUT] Masukkan Telegram Bot Token: " TELEGRAM_TOKEN
-    if [ -n "$TELEGRAM_TOKEN" ]; then
-        break
-    fi
-    echo "[ERROR] Token tidak boleh kosong, coba lagi."
+echo "[INPUT] Masukkan Telegram Bot Token:"
+while read TELEGRAM_TOKEN && [ -z "$TELEGRAM_TOKEN" ]; do
+    echo "[ERROR] Token tidak boleh kosong, coba lagi:"
 done
 
-# Input Telegram Chat ID
-while true; do
-    read -p "[INPUT] Masukkan Telegram Chat ID: " TELEGRAM_CHAT_ID
-    if [ -n "$TELEGRAM_CHAT_ID" ]; then
-        break
-    fi
-    echo "[ERROR] Chat ID tidak boleh kosong, coba lagi."
+echo "[INPUT] Masukkan Telegram Chat ID:"
+while read TELEGRAM_CHAT_ID && [ -z "$TELEGRAM_CHAT_ID" ]; do
+    echo "[ERROR] Chat ID tidak boleh kosong, coba lagi:"
 done
 
-# Input Target Host
-while true; do
-    read -p "[INPUT] Masukkan Target Host (misal: google.com): " TARGET_HOST
-    if [ -n "$TARGET_HOST" ]; then
-        break
-    fi
-    echo "[ERROR] Target host tidak boleh kosong, coba lagi."
+echo "[INPUT] Masukkan Target Host (misal: google.com):"
+while read TARGET_HOST && [ -z "$TARGET_HOST" ]; do
+    echo "[ERROR] Target host tidak boleh kosong, coba lagi:"
 done
 
 # Simpan konfigurasi dengan format yang benar
