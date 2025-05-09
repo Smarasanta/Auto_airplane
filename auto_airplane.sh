@@ -28,7 +28,7 @@ MAX_FAILURES=3
 MAX_RETRIES=3
 INTERVAL=3
 fail_count=0
-TARGET_URL="http://$TARGET_HOST"  # Default to HTTP if no protocol specified
+TARGET_URL="$TARGET_HOST"  # Default to HTTP if no protocol specified
 
 # Ensure log file exists
 touch "$LOG_FILE"
