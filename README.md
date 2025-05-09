@@ -30,4 +30,6 @@ For commercial licensing or inquiries, contact: `smarasanta@example.com`
 1. **Clone repository atau langsung jalankan via curl**:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/Smarasanta/Auto_airplane/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Smarasanta/Auto_airplane/main/install.sh -o install.sh
+chmod +x install.sh
+./install.sh
