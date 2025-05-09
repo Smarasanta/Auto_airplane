@@ -18,20 +18,12 @@ curl -fsSL "$SCRIPT_URL" -o "$INSTALL_PATH"
 chmod +x "$INSTALL_PATH"
 
 # Input manual konfigurasi
-while [ -z "$TELEGRAM_TOKEN" ]; do
-  echo -n "[INPUT] Masukkan Telegram Bot Token: "
-  read TELEGRAM_TOKEN
-done
-
-while [ -z "$TELEGRAM_CHAT_ID" ]; do
-  echo -n "[INPUT] Masukkan Telegram Chat ID: "
-  read TELEGRAM_CHAT_ID
-done
-
-while [ -z "$TARGET_HOST" ]; do
-  echo -n "[INPUT] Masukkan Target Host (misal: google.com): "
-  read TARGET_HOST
-done
+printf "[INPUT] Masukkan Telegram Bot Token: "
+read TELEGRAM_TOKEN
+printf "[INPUT] Masukkan Telegram Chat ID: "
+read TELEGRAM_CHAT_ID
+printf "[INPUT] Masukkan Target Host (misal: google.com): "
+read TARGET_HOST
 
 # Simpan ke file konfigurasi
 cat <<EOF > "$CONFIG_PATH"
@@ -60,6 +52,7 @@ stop() {
 EOF
 
 chmod +x "$SERVICE_PATH"
+# Mengaktifkan service auto_airplane
 /etc/init.d/auto_airplane enable
 
 # Setup log cleaner setiap 30 menit via cron
