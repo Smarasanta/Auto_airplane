@@ -18,19 +18,19 @@ curl -fsSL "$SCRIPT_URL" -o "$INSTALL_PATH"
 chmod +x "$INSTALL_PATH"
 
 # Input manual konfigurasi
-echo "[INPUT] Masukkan Telegram Bot Token:"
+echo -n "[INPUT] Masukkan Telegram Bot Token: "
 read TELEGRAM_TOKEN
-echo "[INPUT] Masukkan Telegram Chat ID:"
+echo -n "[INPUT] Masukkan Telegram Chat ID: "
 read TELEGRAM_CHAT_ID
-echo "[INPUT] Masukkan Target Host (misal: google.com):"
+echo -n "[INPUT] Masukkan Target Host (misal: google.com): "
 read TARGET_HOST
 
-# Simpan ke file konfigurasi
-cat <<EOF > "$CONFIG_PATH"
-TELEGRAM_TOKEN='$TELEGRAM_TOKEN'
-TELEGRAM_CHAT_ID='$TELEGRAM_CHAT_ID'
-TARGET_HOST='$TARGET_HOST'
-EOF
+# Simpan ke file konfigurasi (pakai printf untuk escape karakter)
+{
+    printf "TELEGRAM_TOKEN='%s'\n" "$TELEGRAM_TOKEN"
+    printf "TELEGRAM_CHAT_ID='%s'\n" "$TELEGRAM_CHAT_ID"
+    printf "TARGET_HOST='%s'\n" "$TARGET_HOST"
+} > "$CONFIG_PATH"
 
 # Buat skrip init.d agar auto_airplane jadi service
 SERVICE_PATH="/etc/init.d/auto_airplane"
