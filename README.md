@@ -10,7 +10,7 @@ This software is licensed under a **Custom Restricted License**.
 - ❌ No modification or reverse engineering  
 - ❌ No commercial use without permission
 
-For commercial licensing or inquiries, contact: `smarasanta@example.com`
+For commercial licensing or inquiries, contact: `sabdopalonstore@gmail.com`
 
 ## 🔧 Fitur
 - Ping otomatis ke host target dari router
